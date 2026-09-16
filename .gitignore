@@ -1,6 +1,24 @@
-.Rhistory
-.RData
-.Ruserdata
-.Rproj.user/
+# Output de Dynare
+*/metropolis/
+*/graphs/
+*/model/
+*/Output/
+!*/Output/*_mode.mat
++*/
+*_dynamic.m
+*_static.m
+*_set_auxiliary_variables.m
+*_objective_static.m
+*_objective_dynamic.m
+*.jnl
+*.log
+*_results.mat
 
-__MACOSX/
+# MATLAB
+*.asv
+*.mex*
+
+# Regenerables
+suavizados.mat
+irfs_A.mat
+resultados_B.mat
