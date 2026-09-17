@@ -19,6 +19,3 @@
 *.mex*
 
 # Regenerables
-suavizados.mat
-irfs_A.mat
-resultados_B.mat

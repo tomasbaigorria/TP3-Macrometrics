@@ -73,6 +73,7 @@ y = exp(z/scale) * h^alpha;
 mc = w / ( alpha * exp(z/scale) * h^(alpha-1) );
 
 // --- 7. Phillips (Rotemberg) ---
+// --- 7. Curva de Phillips (Rotemberg) ---
 (1+pi/scale)/(1+pitilde/scale) * ( (1+pi/scale)/(1+pitilde/scale) - 1 )
   = beta * exp((1-sigma)*g(+1)/scale) * lambda(+1)/lambda
     * (1+pi(+1)/scale)/(1+pitilde(+1)/scale)
@@ -80,9 +81,14 @@ mc = w / ( alpha * exp(z/scale) * h^(alpha-1) );
   + 1/(phi*(mu-1)) * ( mu*mc - 1 ) * y;
 
 // --- 8. Regla de Taylor ---
+// El coeficiente de zm2 es [1 - (1-gamma_I)*alpha_pi], que surge de
+// estacionarizar la ec. (17) del Appendix. La pág. 11 del Appendix
+// reporta (1-alpha_pi), que omite el factor (1-gamma_I) del
+// suavizamiento. Verificado contra nk_model.m del replication
+// package (ecuación e7), donde Uribe no expande el exponente.
 1+i/scale = ( A * (1+pi/scale)^alpha_pi * y^alpha_y )^(1-gamma_I)
             * (1+i(-1)/scale)^gamma_I
-            * exp( zm/scale + (1-alpha_pi)*zm2/scale
+            * exp( zm/scale + (1-(1-gamma_I)*alpha_pi)*zm2/scale
                    - gamma_I*zm2(-1)/scale );
 
 // --- 9. Inflación de referencia ---
