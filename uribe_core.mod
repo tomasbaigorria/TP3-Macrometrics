@@ -46,7 +46,7 @@ rho_theta = 0.708;
 rho_z     = 0.7;
 rho_g     = 0.221;
 rho_zm    = 0.306;
-rho_zm2   = 0.796;
+rho_zm2   = 0.796;     // TEST TEMPORAL — valor del paper: 0.796. VOLVER A 0.796
 rho_gm    = 0.248;
 
 model;
@@ -72,7 +72,6 @@ y = exp(z/scale) * h^alpha;
 // --- 6. Costo marginal real ---
 mc = w / ( alpha * exp(z/scale) * h^(alpha-1) );
 
-// --- 7. Phillips (Rotemberg) ---
 // --- 7. Curva de Phillips (Rotemberg) ---
 (1+pi/scale)/(1+pitilde/scale) * ( (1+pi/scale)/(1+pitilde/scale) - 1 )
   = beta * exp((1-sigma)*g(+1)/scale) * lambda(+1)/lambda
