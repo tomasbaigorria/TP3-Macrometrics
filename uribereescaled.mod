@@ -12,8 +12,8 @@ var e_xi    = (0.0287*scale)^2;
 var e_theta = (0.00164*scale)^2;
 var e_z     = (0.00122*scale)^2;
 var e_g     = (0.00758*scale)^2;
-var e_zm    = (0.0025*scale)^2;
-var e_zm2   = (0.0025*scale)^2;
+var e_zm    = (0.000832*scale)^2;
+var e_zm2   = (0.00131*scale)^2;
 var e_gm    = (0.000848*scale)^2;
 end;
 

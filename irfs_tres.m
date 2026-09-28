@@ -23,11 +23,11 @@ for s = 1:2
     sh = shocks{s};
     for p = 1:3
         I = irfs{p};
-        % niveles acumulados
-        Y  = cumsum(I.(['dy_obs_'  sh])(1:H));
-        PI = cumsum(I.(['dpi_obs_' sh])(1:H));
-        II = cumsum(I.(['di_obs_'  sh])(1:H));
-        R  = I.(['r_obs_' sh])(1:H);
+        % producto en %, nominales anualizadas (x4)
+        Y  =   cumsum(I.(['dy_obs_'  sh])(1:H));
+        PI = 4*cumsum(I.(['dpi_obs_' sh])(1:H));
+        II = 4*cumsum(I.(['di_obs_'  sh])(1:H));
+        R  = 4*I.(['r_obs_' sh])(1:H);
 
         datos = {Y, PI, II, R};
         for v = 1:4

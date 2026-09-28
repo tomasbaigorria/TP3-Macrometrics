@@ -7,15 +7,16 @@ H  = length(irf_mc5.dpi_obs_e_gm);
 hh = 0:H-1;
 
 % A: shock permanente e_gm ; B: shock transitorio persistente e_zm2
-YA  = cumsum(irf_mc5.dy_obs_e_gm(1:H));
-PIA = cumsum(irf_mc5.dpi_obs_e_gm(1:H));
-IA  = cumsum(irf_mc5.di_obs_e_gm(1:H));
-RA  = irf_mc5.r_obs_e_gm(1:H);
+% producto en %, nominales anualizadas (x4)
+YA  =   cumsum(irf_mc5.dy_obs_e_gm(1:H));
+PIA = 4*cumsum(irf_mc5.dpi_obs_e_gm(1:H));
+IA  = 4*cumsum(irf_mc5.di_obs_e_gm(1:H));
+RA  = 4*irf_mc5.r_obs_e_gm(1:H);
 
-YB  = cumsum(irf_B.dy_obs_e_zm2(1:H));
-PIB = cumsum(irf_B.dpi_obs_e_zm2(1:H));
-IB  = cumsum(irf_B.di_obs_e_zm2(1:H));
-RB  = irf_B.r_obs_e_zm2(1:H);
+YB  =   cumsum(irf_B.dy_obs_e_zm2(1:H));
+PIB = 4*cumsum(irf_B.dpi_obs_e_zm2(1:H));
+IB  = 4*cumsum(irf_B.di_obs_e_zm2(1:H));
+RB  = 4*irf_B.r_obs_e_zm2(1:H);
 
 % Normalizar a 1 pp de aumento de la inflación en el horizonte final
 escA = 1/PIA(end);
