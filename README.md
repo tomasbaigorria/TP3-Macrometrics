@@ -1,5 +1,5 @@
 ================================================================
-TP3 MACROECONOMETRÍA — PUNTOS 1, 2 Y 3
+TP3 MACROECONOMETRÍA — PUNTOS 1, 2, 3 Y 4
 UdeSA 2026 — García-Cicco / Nuñez
 ================================================================
 
@@ -12,8 +12,10 @@ Código de Dynare y MATLAB para:
     Faccini & Melosi, 2023, QJE) calibrado, con IRFs.
   - Punto 3: las tres estimaciones del modelo Uribe-BFM, más el
     bonus de Metropolis-Hastings.
+  - Punto 4: versión con inflación fiscal no estacionaria.
 
-Estado: puntos 1, 2 y 3 completos. Falta el punto 4.
+Estado: puntos 1, 2, 3 y 4 completos. Falta el bonus del punto 4
+(re-estimación de la versión no estacionaria).
 
 El error de la regla de Taylor que este README marcaba como
 pendiente YA ESTÁ CORREGIDO (ver "ERROR DE LA REGLA DE TAYLOR").
@@ -609,6 +611,168 @@ Es de una sola vez: una vez trackeado, el .gitignore deja de
 aplicarle al archivo.
 
 
+================================================================
+PUNTO 4 — URIBE-BFM NO ESTACIONARIO
+================================================================
+
+ARCHIVOS
+--------
+  uribe_bfm_ns_core.mod   Núcleo del punto 4. Copia de
+                          uribe_bfm_est_core.mod con dos tendencias
+                          nominales. NO se corre directo.
+  uribe_bfm_ns.mod        Calibración (moda de E3) e IRFs.
+  uribe_bfm_phiF_irf.mod  Verificación previa del mecanismo de phi_F.
+  punto4_irfs.m           -> punto4_irfs.png
+
+ORDEN DE EJECUCIÓN
+------------------
+  >> dynare uribe_bfm_ns
+  >> punto4_irfs
+
+
+LA MODIFICACIÓN
+---------------
+Se agregan DOS tendencias nominales, simétricas:
+  X^m_t   meta monetaria (se repone gm, que el punto 2 había
+          apagado). Crecimiento gm, AR(1) estacionario.
+  X^F_t   meta de inflación fiscal (NUEVA). Crecimiento gpiF.
+
+Las nominales del bloque real se deflactan por X^m y las del
+bloque sombra por X^F. Ambas tendencias son I(1) en niveles, así
+que pi^F es no estacionaria y el modelo queda directamente
+comparable con el de Uribe.
+
+Los factores nuevos salen del desfasaje temporal del deflactor:
+  Euler:     X_t/X_{t+1}           -> exp(-g_{t+1})
+  pitilde:   (X_{t-1}/X_t)^gamma_m -> exp(-gamma_m*g_t)
+  deuda:     X_{t-1}/X_t           -> exp(-g_t) en el denominador
+
+Las DOS reglas de Taylor quedan SIN CAMBIOS: ya están normalizadas
+por la meta, así que las tendencias no aparecen ahí. Es el mismo
+argumento que en Uribe-A/B.
+
+Ecuaciones modificadas, bloque real:
+  Euler:    ... * exp( -gm(+1)/scale - sigma*g(+1)/scale )
+  pitilde:  1+pitilde = exp(-gamma_m*gm/scale) * ...
+  deuda:    sb = sb(-1)*(1+i(-1)) / ( (1+pi)*exp(gm)*exp(g)*y/y(-1) ) - tau
+
+Ecuaciones modificadas, bloque sombra (idénticas con gpiF):
+  Euler:    ... * exp( -gpiF(+1)/scale - sigma*gbar/scale )
+  pitildeF: 1+pitildeF = exp(-gamma_m*gpiF/scale) * ...
+  deuda:    sbF = sbF(-1)*(1+iF(-1)) / ( (1+piF)*exp(gpiF)*exp(gbar)*yF/yF(-1) ) - tauF
+
+
+ESTADO ESTACIONARIO
+-------------------
+NO CAMBIA. gm y gpiF tienen media incondicional cero, así que los
+tres factores valen 1 en SS. Alcanza con agregar gm=0; gpiF=0; al
+steady_state_model. Verificado: y = 0.477954, h = 0.373693,
+idénticos a los del punto 3.
+
+
+OBSERVABLES NUEVOS
+------------------
+El bloque sombra necesita sus propios observables, porque piF en el
+.mod es la inflación fiscal YA DEFLACTADA (la parte estacionaria).
+La no estacionaria es la observada:
+    dpiF_obs = piF - piF(-1) + gpiF;
+    diF_obs  = iF - iF(-1) + gpiF;
+Chequeo: el coeficiente de piF(-1) sobre dpiF_obs da -1.000000
+exacto, igual que el de pi(-1) sobre dpi_obs.
+
+Es el mismo fenómeno del punto 1: pi no es la inflación, es la
+inflación relativa a la meta. Acá pasa igual con piF.
+
+
+CALIBRACIÓN
+-----------
+  - 23 parámetros: moda de la Estimación 3 (punto 3).
+  - rho_gm = 0.2019, sigma_gm = 0.1158: media posterior del MH de
+    Uribe-A (no la moda: varios parámetros tienen mala cobertura).
+  - rho_gpiF y sigma_gpiF: SIMÉTRICOS a gm. Decisión de diseño sin
+    anclaje empírico propio, documentada como tal.
+  - phi_F = 0.999 (ver abajo por qué NO el valor estimado).
+
+
+EL RESULTADO PRINCIPAL
+----------------------
+Hacen falta DOS cosas juntas para que la inflación observada
+herede la tendencia fiscal:
+
+  (i)  que exista la tendencia en la meta fiscal (gpiF), y
+  (ii) que el banco central la acomode (phi_F -> 1).
+
+Con phi_F = 0.4509 (el valor ESTIMADO en E3), la tendencia existe
+en el bloque sombra pero NO se transmite:
+    efecto permanente sobre dpiF_obs : 0.1451
+    efecto permanente sobre dpi_obs  : 0.0000104   (cero)
+El principio de Taylor sobre el gap (phi_M = 2.25 > 1) la absorbe.
+
+Con phi_F = 0.999 las dos convergen a 1 (normalizado) y las IRFs
+del shock fiscal y del monetario son casi indistinguibles.
+
+Diferencias entre los dos shocks, normalizados a 1 pp de inflación
+de largo plazo:
+    impacto sobre la inflación : fiscal  0.62  vs monetario  0.57
+    impacto sobre la tasa nom. : fiscal  0.42  vs monetario  0.52
+    impacto sobre la tasa real : fiscal -0.36  vs monetario -0.03
+    pico del producto          : fiscal  0.24  vs monetario  0.21
+
+El efecto neo-Fisher es MÁS marcado en el caso fiscal: como el
+banco central acomoda, sube la tasa menos que la inflación
+esperada y la tasa real cae un orden de magnitud más.
+
+
+VERIFICACIÓN PREVIA DEL MECANISMO (uribe_bfm_phiF_irf.mod)
+----------------------------------------------------------
+Antes de agregar las tendencias se verificó el rol de phi_F
+partiendo de la ecuación (13) de BFM:
+    E_t pi^F_{t+1} = phi_F * pi^F_t
+o sea que phi_F gobierna la persistencia de la inflación fiscal.
+BFM restringen phi_F <= 1; en el límite phi_F = 1 la inflación
+fiscal es un martingala (raíz unitaria). No es un supuesto ad hoc:
+es el borde del propio espacio de parámetros de BFM.
+
+Corriendo E3 con phi_F = 0.999 en vez de 0.4509:
+  - autocorrelación de piF: 0.917 -> 0.9998
+  - desvío de piF: 0.067 -> 2.32
+  - aparece un autovalor 0.999 adicional (la raíz del bloque sombra)
+  - zetaF pasa a explicar 32.6% de la varianza de pi (era 0.03%)
+  - la descomposición CONDICIONAL muestra el peso de zetaF creciendo
+    con el horizonte: 10.1% a 1 trimestre, 13.4% a 4, 24.3% a 20,
+    29.9% a 60. Es la firma de una tendencia.
+
+
+CONEXIÓN ENTRE LAS DOS RUTAS
+----------------------------
+En la formulación con tendencia exógena, X^F se deflacta tanto de i
+como de pi en la regla de Taylor principal, o sea que el banco
+central la acomoda uno a uno. Eso ES phi_F = 1 aplicado a la
+componente tendencial. Las dos rutas dicen lo mismo por caminos
+distintos.
+
+
+LO QUE ESTO IMPLICA PARA LA PREGUNTA DEL TP
+-------------------------------------------
+Que los shocks que identifica Uribe no sean de origen fiscal no es
+una propiedad de la fiscalidad, sino del régimen de política
+monetaria estimado. Con acomodación total, un shock fiscal no
+financiado genera exactamente el mismo tipo de tendencia
+inflacionaria que la meta de Uribe.
+
+
+PENDIENTE DEL PUNTO 4
+---------------------
+- El bonus (re-estimar la versión no estacionaria con la serie de
+  déficit) no está hecho.
+- rho_gpiF y sigma_gpiF no tienen anclaje empírico: se calibran
+  simétricos a gm. Sensibilidad no explorada.
+- La derivación formal de la representación estacionaria (variables
+  en desvíos de la tendencia fiscal, a la BFM: pi = pi^M + pi^F)
+  está en el informe, no implementada como tal: el .mod trabaja
+  directamente con las variables deflactadas.
+
+
 PENDIENTE
 ---------
 - Punto 2: actualizar la moda de Uribe-B en uribe_bfm_irf.mod, que
@@ -638,6 +802,7 @@ PENDIENTE
   Laplace contra Laplace, que sirve, pero con el hessiano mal
   condicionado conviene confirmarla. Son otras ~2 horas.
 
-- Punto 4: versión no estacionaria (1 pt). SIN EMPEZAR.
+- Punto 4: HECHO. Falta el bonus (re-estimar la versión no
+  estacionaria incluyendo la serie de déficit).
 
 - Redacción: máximo 25 páginas + resumen ejecutivo
