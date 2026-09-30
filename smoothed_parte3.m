@@ -14,7 +14,13 @@
 %  revisa), y solo desplaza el NIVEL de las series reconstruidas
 %  por una constante.
 %
-%  Requiere res_e1.mat, res_e2.mat, res_e3.mat.
+%  Se grafican las tres modas mas la MEDIA POSTERIOR de E3, que
+%  sale del Metropolis-Hastings. Dynare deja los suavizados de la
+%  media posterior en uribe_bfm_e3_mh/Output/*_results.mat, asi
+%  que no hay que volver a correr nada.
+%
+%  Requiere res_e1.mat, res_e2.mat, res_e3.mat y
+%  uribe_bfm_e3_mh/Output/uribe_bfm_e3_mh_results.mat
 %  Genera inflacion_suavizada_parte3.png
 % ============================================================
 
@@ -27,7 +33,8 @@ estilos = {'b-','r--','k-.'};
 anchos  = [1.8 1.5 1.7];
 etiq    = {'E1: sin deficit, sin z^{m2}', ...
            'E2: con deficit, sin z^{m2}', ...
-           'E3: con deficit, con z^{m2}'};
+           'E3: con deficit, con z^{m2} (moda)', ...
+           'E3: media posterior (MH)'};
 
 figure('Position',[60 60 1000 500],'Color','w');
 plot(fechas, obs, 'Color',[.7 .7 .7], 'LineWidth',1.0); hold on;
@@ -42,6 +49,16 @@ for N = 1:3
     fprintf('E%-5d %10.4f %10.4f %10.4f\n', ...
             N, R(1,2), sqrt(mean((lvl-obs).^2)), mean(lvl));
 end
+
+% --- la media posterior de E3, del Metropolis-Hastings ---
+MH  = load('uribe_bfm_e3_mh/Output/uribe_bfm_e3_mh_results.mat');
+dsm = MH.oo_.SmoothedVariables.dpi_obs(:);
+lvl = pi0 + cumsum(4*dsm);
+plot(fechas, lvl, 'Color',[0 .5 .2], 'LineStyle',':', 'LineWidth',2.0);
+R = corrcoef(lvl, obs);
+fprintf('%-6s %10.4f %10.4f %10.4f\n', 'E3-MH', R(1,2), ...
+        sqrt(mean((lvl-obs).^2)), mean(lvl));
+
 fprintf('%-6s %10s %10.4f %10.4f\n','obs','--',0,mean(obs));
 
 legend([{'Observada'} etiq], 'Box','off','Location','best','FontSize',8);

@@ -14,12 +14,14 @@
 vars   = {'dy_obs','dpi_obs','di_obs','def_obs'};
 etiq   = {'E1: sin deficit, sin z^{m2}', ...
           'E2: con deficit, sin z^{m2}', ...
-          'E3: con deficit, con z^{m2}'};
+          'E3: con deficit, con z^{m2}  (moda, mode_compute=5)', ...
+          'E3: MEDIA POSTERIOR  (Metropolis-Hastings, 1e6 draws)'};
+arch   = {'res_e1.mat','res_e2.mat','res_e3.mat','res_e3_mean.mat'};
 vlist  = {'dy_obs','dpi_obs','di_obs','r_obs','y','pi','i','r', ...
           'yhat','tau','sb','def_obs'};
 
-for N = 1:3
-    S  = load(sprintf('res_e%d.mat', N));
+for N = 1:numel(arch)
+    S  = load(arch{N});
     vd = S.oo_.variance_decomposition;
     ex = S.M_.exo_names;
 

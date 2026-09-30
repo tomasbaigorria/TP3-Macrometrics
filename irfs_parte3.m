@@ -4,7 +4,7 @@
 %  monetarios (z^m, z^m2) y fiscales (zeta^F, zeta^M).
 %  Variables: producto, inflacion, tasa nominal, tasa real.
 %
-%  Requiere res_e1.mat, res_e2.mat, res_e3.mat.
+%  Requiere res_e1.mat, res_e2.mat, res_e3.mat y res_e3_mean.mat
 %  Genera irfs_parte3.png
 %
 %  Las tasas y la inflacion del modelo estan en pp TRIMESTRALES;
@@ -12,26 +12,29 @@
 %  punto 1. yhat ya es % de desvio del SS.
 % ============================================================
 
-E = cell(3,1);
-for N = 1:3
-    S = load(sprintf('res_e%d.mat', N));
+
+arch = {'res_e1.mat','res_e2.mat','res_e3.mat','res_e3_mean.mat'};
+E    = cell(numel(arch),1);
+for N = 1:numel(arch)
+    S = load(arch{N});
     E{N} = S.oo_.irfs;
 end
 
 shocks  = {'e_zm','e_zm2','e_zetaF','e_zetaM'};
 titulos = {'Monetario transitorio z^m', 'Meta exogena z^{m2}', ...
            'Fiscal NO financiado \zeta^F', 'Fiscal financiado \zeta^M'};
-% en que estimaciones existe cada shock
-presente = {[1 2 3], 3, [1 2 3], [2 3]};
+% en que parametrizaciones existe cada shock
+% (4 = E3 evaluada en la media posterior del MH)
+presente = {[1 2 3 4], [3 4], [1 2 3 4], [2 3 4]};
 
 vars    = {'yhat','pi','i','r'};
 escala  = [1 4 4 4];
 nombres = {'Producto (% del SS)','Inflacion (pp anual)', ...
            'Tasa nominal (pp anual)','Tasa real (pp anual)'};
 
-estilos = {'b-','r--','k-.'};
-anchos  = [1.8 1.5 1.7];
-etiq    = {'E1','E2','E3'};
+estilos = {'b-','r--','k-.',':'};
+anchos  = [1.8 1.5 1.7 2.0];
+etiq    = {'E1','E2','E3 (moda)','E3 (media post.)'};
 
 figure('Position',[40 40 1150 760],'Color','w');
 
@@ -43,7 +46,11 @@ for s = 1:4
             if ~isfield(I, campo), continue; end
             subplot(4,4,(v-1)*4+s);
             x = escala(v)*I.(campo)(:);
-            plot(0:numel(x)-1, x, estilos{N}, 'LineWidth', anchos(N));
+            if N==4
+                plot(0:numel(x)-1, x, estilos{N}, 'Color',[0 .5 .2], 'LineWidth', anchos(N));
+            else
+                plot(0:numel(x)-1, x, estilos{N}, 'LineWidth', anchos(N));
+            end
             hold on;
         end
     end
