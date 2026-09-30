@@ -67,6 +67,36 @@ end
 fprintf('%s\n', repmat('-', 1, 24+13*7));
 fprintf('%-24s', 'SHOCK DE TENDENCIA');
 fprintf('%13.2f', tend); fprintf('\n');
+
+% --- salida para el informe ---
+% Se emite el TABULAR COMPLETO, no solo el cuerpo: LaTeX deja
+% tokens despues de \input{} que rompen el \noalign de \bottomrule
+% si el \input queda adentro de un tabular. Asi el \input anda en
+% cualquier lado. Barras duplicadas en el FORMATO de fprintf.
+filaTex = {'$\xi$ preferencias','$\theta$','$z$','$g$ crecimiento', ...
+           '$z^m$ monetario transitorio','$g^m$ meta permanente', ...
+           '$z^{m2}$ meta transitoria','$\zeta^F$ fiscal no financiado', ...
+           '$\zeta^M$ fiscal financiado'};
+colTex  = {'Uribe-A md','Uribe-A mean','Uribe-B md','E1','E2', ...
+           'E3 md','E3 mean'};
+fid = fopen('tabla_consolidada.tex','w');
+fprintf(fid, '\\begin{tabular}{@{}lrrrrrrr@{}}\n\\toprule\n');
+fprintf(fid, 'Shock');
+fprintf(fid, ' & %s', colTex{:});
+fprintf(fid, ' \\\\\n\\midrule\n');
+for f = 1:9
+    fprintf(fid, '%s', filaTex{f});
+    for c = 1:7
+        if isnan(M(f,c)), fprintf(fid,' & ---');
+        else,             fprintf(fid,' & %.2f', M(f,c)); end
+    end
+    fprintf(fid, ' \\\\\n');
+end
+fprintf(fid, '\\midrule\n\\textbf{Shock de tendencia}');
+fprintf(fid, ' & \\textbf{%.2f}', tend);
+fprintf(fid, ' \\\\\n\\bottomrule\n\\end{tabular}\n');
+fclose(fid);
+fprintf('\nGuardado tabla_consolidada.tex\n');
 fprintf(['\nLa ultima fila toma, en cada columna, el shock que cumple el\n' ...
          'papel de tendencia inflacionaria: g^m en Uribe-A, z^m2 en\n' ...
          'Uribe-B y E3, zetaF en E1 y E2 (donde no hay shock a la meta).\n\n']);

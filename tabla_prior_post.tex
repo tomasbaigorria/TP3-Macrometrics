@@ -1,0 +1,38 @@
+\begin{tabular}{@{}lllrrrc@{}}
+\toprule
+ & \multicolumn{3}{c}{Prior} & \multicolumn{1}{c}{Moda} & \multicolumn{2}{c}{Posterior (MH)} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-5}\cmidrule(lr){6-7}
+Par\'ametro & Forma & Media & Desv\'io & \texttt{mc=5} & Media & HPD 90\% \\
+\midrule
+\multicolumn{7}{@{}l}{\itshape Desvios de shocks}\\[2pt]
+\file{e\_xi} & normal & 1.000 & 1.000 & 2.6060 & 2.6353 & [1.9451, 3.2999]\\
+\file{e\_theta} & normal & 1.000 & 1.000 & 0.0188 & 0.1330 & [0.0000, 0.2753]\\
+\file{e\_z} & normal & 1.000 & 1.000 & 0.0107 & 0.1006 & [0.0000, 0.2049]\\
+\file{e\_g} & normal & 1.000 & 1.000 & 0.7517 & 0.7287 & [0.5823, 0.8724]\\
+\file{e\_zm} & normal & 0.250 & 0.250 & 0.1208 & 0.1074 & [0.0092, 0.1730]\\
+\file{e\_zm2} & normal & 0.250 & 0.250 & 0.1474 & 0.1443 & [0.1055, 0.1894]\\
+\file{e\_zetaF} & normal & 1.000 & 1.000 & 1.8915 & 1.6584 & [0.0031, 2.9772]\\
+\file{e\_zetaM} & normal & 1.000 & 1.000 & 15.0509 & 15.3015 & [14.0802, 16.5374]\\
+\multicolumn{7}{@{}l}{\itshape Errores de medicion}\\[2pt]
+\file{dy\_obs} & normal & 0.194 & 0.112 & 0.2305 & 0.2653 & [0.0670, 0.4564]\\
+\file{r\_obs} & normal & 0.144 & 0.083 & 0.2159 & 0.2189 & [0.1976, 0.2398]\\
+\file{di\_obs} & normal & 0.049 & 0.028 & 0.0277 & 0.0328 & [0.0009, 0.0579]\\
+\file{def\_obs} & normal & 0.344 & 0.172 & 0.6211 & 0.6064 & [0.5395, 0.6874]\\
+\multicolumn{7}{@{}l}{\itshape Estructurales}\\[2pt]
+\file{phi} & normal & 50.000 & 20.000 & 98.0944 & 104.9305 & [77.7766, 131.7553]\\
+\file{phi\_M} & normal & 1.500 & 0.250 & 2.2491 & 2.2827 & [2.0146, 2.5595]\\
+\file{alpha\_y} & normal & 0.125 & 0.100 & 0.1907 & 0.2013 & [0.0529, 0.3449]\\
+\file{gamma\_m} & uniform & 0.500 & 0.289 & 0.5999 & 0.6101 & [0.4807, 0.7360]\\
+\file{gamma\_I} & uniform & 0.500 & 0.289 & 0.2550 & 0.2509 & [0.0398, 0.4576]\\
+\file{delta} & uniform & 0.500 & 0.289 & 0.2170 & 0.2132 & [0.1201, 0.3088]\\
+\file{rho\_xi} & beta & 0.700 & 0.200 & 0.9238 & 0.9199 & [0.8915, 0.9499]\\
+\file{rho\_theta} & beta & 0.700 & 0.200 & 0.8795 & 0.7259 & [0.4240, 0.9999]\\
+\file{rho\_z} & beta & 0.700 & 0.200 & 0.8788 & 0.7217 & [0.4182, 1.0000]\\
+\file{rho\_g} & beta & 0.300 & 0.200 & 0.2097 & 0.2035 & [0.0449, 0.3527]\\
+\file{rho\_zm} & beta & 0.300 & 0.200 & 0.3019 & 0.3772 & [0.0117, 0.6961]\\
+\file{rho\_zetaF} & beta & 0.700 & 0.200 & 0.8968 & 0.7241 & [0.4352, 0.9851]\\
+\file{rho\_zetaM} & beta & 0.700 & 0.200 & 0.9867 & 0.9854 & [0.9758, 0.9953]\\
+\file{phi\_F} & beta & 0.500 & 0.250 & 0.4509 & 0.4896 & [0.0854, 0.8883]\\
+\file{gamma\_M} & normal & 5.000 & 2.236 & 1.0710 & 1.2176 & [1.0020, 1.4505]\\
+\bottomrule
+\end{tabular}

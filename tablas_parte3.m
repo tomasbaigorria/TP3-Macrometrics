@@ -20,10 +20,38 @@ arch   = {'res_e1.mat','res_e2.mat','res_e3.mat','res_e3_mean.mat'};
 vlist  = {'dy_obs','dpi_obs','di_obs','r_obs','y','pi','i','r', ...
           'yhat','tau','sb','def_obs'};
 
+% Salida para el informe, cuerpo de tabular para \input{}.
+% Barras duplicadas en el FORMATO porque fprintf procesa escapes.
+% Etiquetas aparte: las de pantalla tienen z^{m2} suelto, que en
+% LaTeX necesita modo matematico.
+etiqTex = {'E1: sin d\''eficit, sin $z^{m2}$', ...
+           'E2: con d\''eficit, sin $z^{m2}$', ...
+           'E3: con d\''eficit, con $z^{m2}$ (moda)', ...
+           'E3: media posterior (Metropolis-Hastings)'};
+% Tabular COMPLETO: \input{} adentro de un tabular rompe el
+% \noalign de \bottomrule.
+fid = fopen('tablas_parte3.tex','w');
+fprintf(fid, '\\begin{tabular}{@{}lrrrrrrrrr@{}}\n\\toprule\n');
+fprintf(fid, 'Variable');
+S0 = load(arch{1});
+for k = 1:numel(S0.M_.exo_names)
+    fprintf(fid, ' & \\file{%s}', strrep(S0.M_.exo_names{k},'_','\_'));
+end
+fprintf(fid, ' & Suma \\\\\n\\midrule\n');
+
 for N = 1:numel(arch)
     S  = load(arch{N});
     vd = S.oo_.variance_decomposition;
     ex = S.M_.exo_names;
+
+    fprintf(fid, '\\multicolumn{10}{@{}l}{\\itshape %s}\\\\[2pt]\n', etiqTex{N});
+    for v = 1:numel(vars)
+        r = find(strcmp(vlist, vars{v}));
+        fprintf(fid, '\\file{%s}', strrep(vars{v},'_','\_'));
+        fprintf(fid, ' & %.2f', vd(r,:));
+        fprintf(fid, ' & %.2f \\\\\n', sum(vd(r,:)));
+    end
+    if N < numel(arch), fprintf(fid, '\\addlinespace\n'); end
 
     fprintf('\n=== %s ===\n', etiq{N});
     fprintf('%-10s', 'variable');
@@ -46,4 +74,6 @@ for N = 1:numel(arch)
              'zetaM %.2f%% | z^m2 %.2f%%\n'], ...
              vd(r,iF), vd(r,iM), vd(r,i2));
 end
-fprintf('\n');
+fprintf(fid, '\\bottomrule\n\\end{tabular}\n');
+fclose(fid);
+fprintf('\nGuardado tablas_parte3.tex\n');

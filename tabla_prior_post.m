@@ -26,7 +26,15 @@ formas = {'beta','gamma','normal','invg','uniform','invg2'};
 grupos = {'shocks_std','measurement_errors_std','parameters'};
 etiq   = {'Desvios de shocks','Errores de medicion','Estructurales'};
 
+% Tabular COMPLETO: \input{} adentro de un tabular rompe el
+% \noalign de \bottomrule.
 fid = fopen('tabla_prior_post.tex','w');
+fprintf(fid, '\\begin{tabular}{@{}lllrrrc@{}}\n\\toprule\n');
+fprintf(fid, [' & \\multicolumn{3}{c}{Prior} & \\multicolumn{1}{c}{Moda}' ...
+              ' & \\multicolumn{2}{c}{Posterior (MH)} \\\\\n']);
+fprintf(fid, '\\cmidrule(lr){2-4}\\cmidrule(lr){5-5}\\cmidrule(lr){6-7}\n');
+fprintf(fid, ['Par\\''ametro & Forma & Media & Desv\\''io & \\texttt{mc=5}' ...
+              ' & Media & HPD 90\\%% \\\\\n\\midrule\n']);
 fprintf('\n%-18s %9s %8s %8s %12s %10s %18s\n', ...
         'parametro','prior','media','desvio','moda (mc5)','media MH','HPD 90%');
 fprintf('%s\n', repmat('-',1,92));
@@ -35,7 +43,8 @@ k = 0;
 for g = 1:3
     nm = fieldnames(oo.posterior_mean.(grupos{g}));
     fprintf('\n-- %s --\n', etiq{g});
-    fprintf(fid, '\multicolumn{7}{@{}l}{\itshape %s}\\[2pt]\n', etiq{g});
+    % Barras duplicadas: el formato de fprintf procesa escapes.
+    fprintf(fid, '\\multicolumn{7}{@{}l}{\\itshape %s}\\\\[2pt]\n', etiq{g});
     for j = 1:numel(nm)
         k = k + 1;
         p   = nm{j};
@@ -49,10 +58,11 @@ for g = 1:3
 
         fprintf('%-18s %9s %8.3f %8.3f %8.4f(%.3f) %10.4f  [%7.4f,%8.4f]\n', ...
                 p, forma, pm, ps, mo, sm, mu, lo, hi);
-        fprintf(fid, '\file{%s} & %s & %.3f & %.3f & %.4f & %.4f & [%.4f, %.4f]\\\n', ...
+        fprintf(fid, '\\file{%s} & %s & %.3f & %.3f & %.4f & %.4f & [%.4f, %.4f]\\\\\n', ...
                 strrep(p,'_','\_'), forma, pm, ps, mo, mu, lo, hi);
     end
 end
+fprintf(fid, '\\bottomrule\n\\end{tabular}\n');
 fclose(fid);
 fprintf('\nGuardado tabla_prior_post.tex\n');
 

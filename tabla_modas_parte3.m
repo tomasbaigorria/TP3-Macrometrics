@@ -46,11 +46,22 @@ fprintf('%-20s %19s %19s %19s %9s\n', 'parametro', 'moda (desvio)', ...
         'moda (desvio)', 'moda (desvio)', 'en E3');
 fprintf('%s\n', repmat('-', 1, 92));
 
+% Tabular COMPLETO: \input{} adentro de un tabular rompe el
+% \noalign de \bottomrule.
 fid = fopen('tabla_modas_parte3.tex','w');
+fprintf(fid, '\\begin{tabular}{@{}lrrrrrr@{}}\n\\toprule\n');
+fprintf(fid, [' & \\multicolumn{2}{c}{E1} & \\multicolumn{2}{c}{E2}' ...
+              ' & \\multicolumn{2}{c}{E3} \\\\\n']);
+fprintf(fid, '\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-7}\n');
+fprintf(fid, ['Par\\''ametro & Moda & Desv\\''io & Moda & Desv\\''io' ...
+              ' & Moda & Desv\\''io \\\\\n\\midrule\n']);
 for j = 1:numel(nombres)
     nm = nombres{j};
     fprintf('%-20s', nm);
-    fprintf(fid, '\file{%s}', strrep(nm,'_','\_'));
+    % OJO: en el FORMATO de fprintf hay que duplicar la barra, porque
+    % MATLAB interpreta \f como formfeed. En los ARGUMENTOS no, que
+    % no pasan por el procesador de escapes (de ahi el '\_' suelto).
+    fprintf(fid, '\\file{%s}', strrep(nm,'_','\_'));
     for N = 1:3
         k = find(strcmp(E{N}.nom, nm));
         if isempty(k)
@@ -63,8 +74,9 @@ for j = 1:numel(nombres)
     end
     k3 = find(strcmp(E{3}.nom, nm));
     fprintf(' %9.4f\n', E{3}.cu(k3));
-    fprintf(fid, ' \\\n');
+    fprintf(fid, ' \\\\\n');
 end
+fprintf(fid, '\\bottomrule\n\\end{tabular}\n');
 fclose(fid);
 
 fprintf('\nGuardado tabla_modas_parte3.tex\n');
