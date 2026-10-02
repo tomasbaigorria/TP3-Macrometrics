@@ -41,7 +41,7 @@ end;
 // Carga la moda y computa IRFs + descomposición de varianza
 estimation(datafile      = datos_uribe,
            mode_compute  = 0,
-           mode_file     = 'uribe_A_mh/Output/uribe_A_mh_mode',
+           mode_file     = 'uribe_mode_A/Output/uribe_mode_A_mode',
            mh_replic     = 0,
            nograph);
 

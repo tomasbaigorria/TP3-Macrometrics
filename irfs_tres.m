@@ -17,13 +17,12 @@ estilos = {'b-', 'r--', 'k:'};
 anchos  = [1.8, 1.5, 1.7];
 etiq    = {'Moda (mc=5)','Moda (mc=6)','Media posterior'};
 
-figure('Position',[60 60 1000 720],'Color','w');
+figure('Position',[60 60 1300 520],'Color','w');
 
 for s = 1:2
     sh = shocks{s};
     for p = 1:3
         I = irfs{p};
-        % producto en %, nominales anualizadas (x4)
         Y  =   cumsum(I.(['dy_obs_'  sh])(1:H));
         PI = 4*cumsum(I.(['dpi_obs_' sh])(1:H));
         II = 4*cumsum(I.(['di_obs_'  sh])(1:H));
@@ -31,7 +30,7 @@ for s = 1:2
 
         datos = {Y, PI, II, R};
         for v = 1:4
-            subplot(4,2,(v-1)*2+s);
+            subplot(2,4,(s-1)*4+v);
             plot(hh, datos{v}, estilos{p}, 'LineWidth', anchos(p)); hold on;
         end
     end
@@ -39,14 +38,14 @@ for s = 1:2
     nombres = {'Producto (%)','Inflación (pp anual)', ...
                'Tasa nominal (pp anual)','Tasa real (pp anual)'};
     for v = 1:4
-        subplot(4,2,(v-1)*2+s);
+        subplot(2,4,(s-1)*4+v);
         yline(0,'k:'); grid on; box off; xlim([0 H-1]);
+        title(nombres{v},'FontSize',9);
         if v==1
-            title(titulos{s},'FontSize',10,'Interpreter','tex');
+            ylabel(titulos{s},'FontSize',9,'Interpreter','tex','FontWeight','bold');
             if s==1, legend(etiq,'Box','off','Location','best','FontSize',7); end
         end
-        if s==1, ylabel(nombres{v},'FontSize',8); end
-        if v==4, xlabel('Trimestres'); end
+        if s==2, xlabel('Trimestres','FontSize',8); end
     end
 end
 

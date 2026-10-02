@@ -1,6 +1,6 @@
 // ============================================================
-//  uribe_A_smoother6.mod
-//  Smoother de Uribe-A en la moda de mode_compute = 6
+//  uribe_A_smoother5.mod
+//  Smoother de Uribe-A en la moda de mode_compute = 5
 // ============================================================
 
 @#include "uribe_core.mod"
@@ -44,7 +44,7 @@ end;
 
 estimation(datafile      = datos_uribe,
            mode_compute  = 0,
-           mode_file     = 'uribe_A_mode6/Output/uribe_A_mode6_mode',
+           mode_file     = 'uribe_mode_A/Output/uribe_mode_A_mode',
            mh_replic     = 0,
            smoother,
            nograph) dpi_obs dy_obs di_obs r_obs pi gm;

@@ -1,15 +1,12 @@
 // ============================================================
-//  uribe_A_smoother6.mod
-//  Smoother de Uribe-A en la moda de mode_compute = 6
+//  uribe_A_irf6.mod
+//  IRFs y descomposición de varianza de Uribe-A
+//  evaluadas en la moda obtenida con mode_compute = 6
 // ============================================================
 
 @#include "uribe_core.mod"
 
 rho_zm2 = 0;
-
-shocks;
-var e_zm2 = 0;
-end;
 
 varobs dy_obs r_obs di_obs;
 
@@ -46,5 +43,11 @@ estimation(datafile      = datos_uribe,
            mode_compute  = 0,
            mode_file     = 'uribe_A_mode6/Output/uribe_A_mode6_mode',
            mh_replic     = 0,
-           smoother,
-           nograph) dpi_obs dy_obs di_obs r_obs pi gm;
+           nograph);
+
+shocks;
+var e_zm2 = 0;
+end;
+
+stoch_simul(order=1, irf=21, nograph, conditional_variance_decomposition=[1 4 8 20])
+    dy_obs dpi_obs di_obs r_obs y pi i r;
